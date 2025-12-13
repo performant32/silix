@@ -1,6 +1,21 @@
 bits 16
 org 0x7C00
 jmp start
+
+; Fat12 Headers
+fat_oem_name: db "MSWin4.1"
+fat_bytes_per_cluster: dw 512
+fat_sectors_per_cluster: db 4
+fat_reserved_sector_count: dw 1
+fat_table_count: db 2
+fat_max_root_dir_entries:dw 224
+fat_total_sectors: db 2720
+fat_media_descriptor_type: db 0xF8
+fat_sectors_per_fat: dw 2
+fat_sectors_per_track: dw 16
+fat_heads_per_side: dw 2
+fat_hidden_sectors: dd 0
+fat_large_sector_count:dd 0
 start:
     cli
     mov ax, 0

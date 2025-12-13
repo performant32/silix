@@ -21,6 +21,7 @@ make_files:
 build_floppy: make_files boot1
 	dd if=/dev/zero of=bin/silix.floppy bs=512 count=2734
 	mkfs.fat -F 12 bin/silix.floppy 
+	echo "Hello MFat12Hello" | mcopy -i bin/silix.floppy - ::/source.txt 
 	#dd if=$(OBJ_DIR)/boot1.bin of=bin/silix.floppy bs=512 count=1 conv=notrunc
 
 boot1:
