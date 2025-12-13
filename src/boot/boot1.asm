@@ -1,5 +1,6 @@
 bits 16
 org 0x7C00
+jmp start
 start:
     cli
     mov ax, 0
@@ -82,23 +83,6 @@ print_string:
     int 0x10
     jmp .Loop
 .Finish:
-    ret
-; Parameters sued
-;   SI - source
-;   dx - n
-; Registers Changed
-print_string_n:
-    push cx
-    mov ah, 0x0e
-.Loop:
-    lodsb
-    cmp cx, dx
-    je .Finish
-    int 0x10
-    inc cx
-    jmp .Loop
-.Finish:
-    pop cx
     ret
 times 446 - ($-$$) db 0
 ; Data
