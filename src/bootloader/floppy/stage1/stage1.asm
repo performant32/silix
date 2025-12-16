@@ -85,20 +85,6 @@ lba_to_chs:
     mov ch, al
     leave
     ret
-
-    ;mov [bp - 2], ax
-    ;div word fat_sectors_per_track
-    ;mov [bp - 4], ax
-    ;div word fat_sectors_per_track
-    ;mov dh, ah
-    ;mov al, [bp - 4]
-    ;mov bl, fat_sectors_per_track
-    ;div bl
-    ;add ah, 1
-    ;mov cl, ah
-    ;mov al, [bp - 4]
-    ;div word fat_heads_per_side 
-    ;ret
 ; Reads Stage2 from the floppy into 0x7D00
 ; Parameters
 ;   si- fileName
