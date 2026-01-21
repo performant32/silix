@@ -3,7 +3,7 @@ ASM_FLAGS := -f bin
 # Boot Options are [floppy]
 BOOT_FS:=fat12
 # Modes are [graphic, nographic]
-BOOT_MODE:=nographic
+BOOT_MODE:=graphic
 # Modes are [IA, AArch]
 Arch=IA
 # Qemu Boot flags
@@ -23,9 +23,10 @@ STAGE2_OBJ:=$(OBJ_DIR)/$(BOOT_FS)/stage2
 KERNEL_BIN:=$(BIN_DIR)/kernel
 KERNEL_OBJ:=$(OBJ_DIR)/kernel
 
-.PHONY: default setup_flags build_floppy run_floppy boot1 test run_nographic clean fat12
+.PHONY: default setup_flags build_floppy run_floppy help boot1 test run_nographic clean fat12
 default: build_floppy run_floppy
-
+help:
+	@(echo build_floppy run_floppy run_nographic clean fat12)
 clean:
 	rm -rf bin
 make_files:

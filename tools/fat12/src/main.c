@@ -125,7 +125,7 @@ int main(int argc, char** argv){
     // Reading Main File
     for(size_t i = 0; i < bpb.m_RootEntries; i++){
         DirectoryEntry* entry = &root[i];
-        if(strncmp(entry->m_FileName, "TEST    BIN", 11)){
+        if(strncmp(entry->m_FileName, "STAGE2  BIN", 11)){
             continue;
         }
         printf("Got file");
@@ -164,6 +164,7 @@ int main(int argc, char** argv){
             currentCluster = (currentCluster & 1) ? value >> 4 : value & 0xFFF;
         }while(bytesRead < fileSize);
         printf("\n");
+        printf("Data %.*s\n", fileSize, fileData);
         free(fileData);
     }
     free(data);

@@ -91,21 +91,23 @@ lba_to_chs:
 ;   ah = error code
 handle_read_error:
     mov dl, ah
+.Loop:
+    enter 4
+    mov ax, dx
+    mov cl, 10
+    div cl
+    mov dl, al
+    mov al, ah
     mov ah, 0x0E
-    mov al, dl
-    and al, 0b11110000
-    shr al, 4
     add al, '0'
     int 0x10
-    mov al, dl
-    and al, 0b1111
-    add al, '0'
-    int 0x10
+    cmp dl, 0
+    jg .Loop
     mov si, msg_read_sectors_failed
     call print_string
-.Loop:
+.Loop2:
     hlt
-    jmp .Loop
+    jmp .Loop2
 ; Reads Stage2 from the floppy into 0x7D00
 ; Parameters
 ;   si- fileName
@@ -176,19 +178,24 @@ load_stage2:
 .LoadFile:
     ; Getting sector
     mov ax, [bp - 10]
-    sub ax, 2
     mul byte [fat_sectors_per_cluster]
     add ax, [bp - 8]
-    mov ax, 30
     call lba_to_chs
+
     ; Loading
     mov ah, 0x2
     mov dl, 0
+    mov al, 1
     mov bx, 0x7E00
     int 0x13
-
+    jnc .Start
+    mov si, msg_stage2_read_error
+    call print_string
+    cli
+    hlt
+.Start
     ; Starting Stage2
-    jmp 0x7E00:0000
+    jmp 0x7E0:0000
 stage2_not_found:
     mov si, msg_stage2_not_found
     call print_string
@@ -237,7 +244,7 @@ stage2_filename: db "STAGE2  BIN"
 msg_stage2_not_found: db "Stage2 Not Found", ENDL, 0x00
 msg_read_sectors_failed: db "Read Sectors Failed", ENDL, 0x00
 msg_div_error: db "Div error", ENDL, 0x00
-times 446 - ($-$$) db 0
+msg_stage2_read_error:db "Read Sectors failed", ENDL, 0x00
 times 510 - ($-$$) db 0
 ;db 0x55, 0xAA
 dw 0xAA55

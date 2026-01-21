@@ -1,7 +1,7 @@
 CC:=wcc
 LD:=wlink
 ASM:=nasm
-CFLAGS:=-0 -zl -za -s -ecc
+CFLAGS:=-0 -zl -za -s -ecc -za99
 LD_FLAGS:=@linker.lk name $(BIN_DIR)/stage2.bin
 ASM_FLAGS:=-f obj
 SRC_DIR:=src

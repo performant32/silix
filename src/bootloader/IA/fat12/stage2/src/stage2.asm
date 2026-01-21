@@ -3,17 +3,16 @@ section .STAGE2
 extern _start
 extern _PrintString
 start:
-    cld
-    mov al, 'a'
+    mov al, 'T'
     mov ah, 0x0E
     int 0x10
 
+    mov ax, 0x7E0
+    mov ds, ax
     call _start
-;    push 0
-;    push test
-;    call _PrintString
-    cli
-    hlt
-;section .data 
-;times 12 db 0
-;test: db "Fully Loaded", 0x00
+
+    push test
+    call _PrintString
+section .data
+%define ENDL `\012`, `\015`
+test: db "Fully Loaded",ENDL, 0
