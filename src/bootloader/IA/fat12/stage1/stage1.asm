@@ -246,5 +246,4 @@ msg_read_sectors_failed: db "Read Sectors Failed", ENDL, 0x00
 msg_div_error: db "Div error", ENDL, 0x00
 msg_stage2_read_error:db "Read Sectors failed", ENDL, 0x00
 times 510 - ($-$$) db 0
-;db 0x55, 0xAA
 dw 0xAA55

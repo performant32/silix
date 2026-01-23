@@ -40,12 +40,17 @@ build_floppy: make_files stage1 stage2 test
 	mcopy -i $(BIN_DIR)/silix.floppy $(BIN_DIR)/test.bin ::/TEST.BIN
 	echo "Hello World Test" | dd ibs=11 obs=512 seek=30 of=$(BIN_DIR)/silix.floppy count=1 conv=notrunc
 stage1:
-	$(MAKE) -C $(BOOTLOADER_SRC)/stage1 stage1 BIN_DIR=$(abspath $(STAGE1_BIN))
+	$(MAKE) -C $(BOOTLOADER_SRC)/stage1 stage1 OBJ_DIR=$(abspath $(STAGE1_OBJ)) BIN_DIR=$(abspath $(STAGE1_BIN))
 stage2:
 	$(MAKE) -C $(BOOTLOADER_SRC)/stage2 stage2 OBJ_DIR=$(abspath $(STAGE2_OBJ)) BIN_DIR=$(abspath $(STAGE2_BIN))
 kernel:
 	$(MAKE) -C $(KERNEL_SRC) kernel BIN_DIR=$(abspath $(KERNEL_BIN)) OBJ_DIR=$(abspath $(KERNEL_OBJ))
-run_floppy: 
+iso:
+	$(MAKE) -C src/bootloader/grub KERNEL_BIN=$(abspath $(KERNEL_BIN)) BIN_DIR=$(abspath $(BIN_DIR)/)
+
+run_iso:
+	qemu-system-i386 $(BOOT_FLAGS) -cdrom $(BIN_DIR)/silix.iso -boot d
+run_floppy:
 	qemu-system-x86_64 $(BOOT_FLAGS) -fda $(BIN_DIR)/silix.floppy -boot order=a
 fat12:
 	$(MAKE) -C tools/fat12/ fat12 OUTPUT_DIR=$(abspath bin/tools)
