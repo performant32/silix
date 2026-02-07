@@ -1,7 +1,7 @@
 ASM := nasm
 ASM_FLAGS := -f bin
 # Boot Options are [floppy]
-BOOT_FS:=fat12
+BOOT_FS:=iso
 # Modes are [graphic, nographic]
 BOOT_MODE:=graphic
 # Modes are [IA, AArch]
@@ -44,9 +44,9 @@ stage1:
 stage2:
 	$(MAKE) -C $(BOOTLOADER_SRC)/stage2 stage2 OBJ_DIR=$(abspath $(STAGE2_OBJ)) BIN_DIR=$(abspath $(STAGE2_BIN))
 kernel:
-	$(MAKE) -C $(KERNEL_SRC) kernel BIN_DIR=$(abspath $(KERNEL_BIN)) OBJ_DIR=$(abspath $(KERNEL_OBJ))
-iso:
-	$(MAKE) -C src/bootloader/grub KERNEL_BIN=$(abspath $(KERNEL_BIN)) BIN_DIR=$(abspath $(BIN_DIR)/)
+	$(MAKE) -C $(KERNEL_SRC) BIN_DIR=$(abspath $(KERNEL_BIN)) OBJ_DIR=$(abspath $(KERNEL_OBJ))
+iso: stage1 kernel
+	$(MAKE) -C src/bootloader/grub STAGE1_BIN=$(abspath $(STAGE1_BIN)) KERNEL_BIN=$(abspath $(KERNEL_BIN)) BIN_DIR=$(abspath $(BIN_DIR)/)
 
 run_iso:
 	qemu-system-i386 $(BOOT_FLAGS) -cdrom $(BIN_DIR)/silix.iso -boot d
@@ -56,3 +56,6 @@ fat12:
 	$(MAKE) -C tools/fat12/ fat12 OUTPUT_DIR=$(abspath bin/tools)
 test:
 	$(ASM) $(ASM_FLAGS) $(BOOTLOADER_SRC)/test.asm -o $(BIN_DIR)/test.bin
+dump_kernel:
+	file $(KERNEL_BIN)/kernel.efi
+	hexdump -C $(KERNEL_BIN)/kernel.efi

@@ -1,16 +1,20 @@
 ASM := nasm
+CC:=gcc
+CFLAGS:= -c -I/usr/include/efi/ -fpic -ffreestanding -fno-stack-protector -fno-stack-check -maccumulate-outgoing-args
 LK := ld
-ASM_FLAGS := -f elf32
-
-CC:=x86_64-w64-mingw32-c++
-CFLAGS:=-shared -Wl,--subsystem,efi-application -m64 -e kmain -nostdlib \
+ASM_FLAGS:= -f elf64
+#CFLAGS:=-shared -Wl,--subsystem,efi-application -m64 -e kmain -nostdlib \
 		-fno-stack-protector -fpic -fshort-wchar -mno-red-zone
-LK_FLAGS:= -T linker.ld -m elf_i386
+LK_FLAGS:= -T linker.ld -shared -Bsymbolic   -L/usr/lib/ -lefi -lgnuefi
 .PHONY: default always kernel
 defualt: kernel
 always:
 	mkdir -p $(BIN_DIR)/
 kernel: always
-	$(ASM) $(ASM_FLAGS) src/kernel.asm -o $(BIN_DIR)/kernel.obj
+	$(echo "HELLO")
+	$(CC) $(CFLAGS) src/kernel.c -o $(BIN_DIR)/kernel.obj
+#$(ASM) $(ASM_FLAGS) src/multiboot.asm -o $(BIN_DIR)/multiboot.obj
 	$(LK) $(LK_FLAGS)  $(BIN_DIR)/kernel.obj -o $(BIN_DIR)/kernel.bin
-	#$(CC) $(CFLAGS) $(BIN_DIR)/kernel.bin -o $(BIN_DIR)/kernel.exe
+	objcopy -j .test -j .sdata -j .data -j .rodata -j .dynamic -j .dynsym -j .rel -j .rela\
+		-j .rela -j .rel.* -j .rela.* -j .reloc --target efi-app-x86_64 --subsystem=10 \
+		$(BIN_DIR)/kernel.bin $(BIN_DIR)/kernel.efi
