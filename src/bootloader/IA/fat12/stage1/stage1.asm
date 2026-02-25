@@ -182,7 +182,7 @@ load_stage2:
     add ax, [bp - 8]
     call lba_to_chs
 
-    ; Loading
+    ; Loading first sector
     mov ah, 0x2
     mov dl, 0
     mov al, 1
