@@ -36,9 +36,9 @@ floppy: make_files stage1 stage2 test kernel
 	dd if=/dev/zero of=$(BIN_DIR)/silix.floppy bs=512 count=2880
 	mkfs.fat -F 12 $(BIN_DIR)/silix.floppy 
 	mcopy -i $(BIN_DIR)/silix.floppy $(STAGE2_BIN)/stage2.bin ::/STAGE2.bin
-	dd if=$(STAGE1_BIN)/stage1.bin of=$(BIN_DIR)/silix.floppy bs=512 count=1 conv=notrunc
-	mcopy -i $(BIN_DIR)/silix.floppy $(BIN_DIR)/test.bin ::/TEST.BIN
 	mcopy -i $(BIN_DIR)/silix.floppy $(KERNEL_BIN)/kernel.bin ::/KERNEL.BIN
+	mcopy -i $(BIN_DIR)/silix.floppy $(BIN_DIR)/test.bin ::/TEST.BIN
+	dd if=$(STAGE1_BIN)/stage1.bin of=$(BIN_DIR)/silix.floppy bs=512 count=1 conv=notrunc
 stage1:
 	$(MAKE) -C $(BOOTLOADER_SRC)/stage1 stage1 OBJ_DIR=$(abspath $(STAGE1_OBJ)) BIN_DIR=$(abspath $(STAGE1_BIN))
 stage2:
@@ -52,6 +52,7 @@ run_iso:
 	qemu-system-i386 $(BOOT_FLAGS) -cdrom $(BIN_DIR)/silix.iso -boot d
 run_floppy:
 	qemu-system-x86_64 $(BOOT_FLAGS) -fda $(BIN_DIR)/silix.floppy -boot order=a
+br_floppy: floppy run_floppy
 fat12: 
 	$(MAKE) -C tools/fat12/ fat12 OUTPUT_DIR=$(abspath bin/tools) 
 test:

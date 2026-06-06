@@ -8,7 +8,11 @@ typedef struct CHS{
     uint8_t m_Sector;
 } CHS;
 
-CHS LBAToCHS(uint16_t lba){
-    return {0,0,0};
+CHS __cdecl LBAToCHS(uint16_t lba){
+    CHS chs = {0,56,0};
+    return chs;
 }
+
+extern int __cdecl ReadDisk(CHS chs);
+
 #endif

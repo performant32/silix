@@ -1,0 +1,63 @@
+Open Watcom Linker Version 2.0 beta Nov  3 2025 07:04:38 (64-bit)
+Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
+Created on:       26/03/02 12:19:05
+Executable Image: /home/tyler/projects/silix/bin/IA/kernel/kernel.bin
+creating a RAW Binary Image executable
+
+
+                        +------------+
+                        |   Groups   |
+                        +------------+
+
+Group                           Address              Size
+=====                           =======              ====
+
+DGROUP                          00007e0e             00000016
+
+
+
+                        +--------------+
+                        |   Segments   |
+                        +--------------+
+
+Segment                Class          Group          Address         Size
+=======                =====          =====          =======         ====
+
+_TEXT                  CODE           AUTO           00007e00        0000000d
+CONST                  DATA           DGROUP         00007e0e        00000015
+CONST2                 DATA           DGROUP         00007e24        00000000
+_DATA                  DATA           DGROUP         00007e24        00000000
+KERNEL_START                          AUTO           00007e24        0000001f
+code                                  AUTO           00007e43        00000032
+
+
+                        +----------------+
+                        |   Memory Map   |
+                        +----------------+
+
+* = unreferenced symbol
++ = symbol only referenced locally
+
+Address        Symbol
+=======        ======
+
+Module: /home/tyler/projects/silix/bin/IA/objs/kernel/c/kernel.obj(kernel)
+00007e00       _kmain
+Module: /home/tyler/projects/silix/bin/IA/objs/kernel/asm/start.obj(src/start.asm)
+00007e2f       _kend
+Module: /home/tyler/projects/silix/bin/IA/objs/kernel/asm/teletype.obj(src/teletype.asm)
+00007e43       _PrintString
+00007e5a*      _PrintChar
+Warning! W1014: stack segment not found
+Warning! W1023: no starting address found, using 00007e00
+
+
+                        +-----------------------+
+                        |   Linker Statistics   |
+                        +-----------------------+
+
+Stack size:  1000 (4096.)
+Memory size:  0075 (117.)
+Entry point address: 00007e00
+Link time: 00:00.21

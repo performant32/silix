@@ -17,6 +17,8 @@ fat_heads: dw 2
 fat_hidden_sectors: dd 0
 fat_large_sector_count:dd 0
 
+FAT_LOCATION equ 0x500
+
 struc DirectoryEntry
     .fileName: resb 11
     .attributes: resb 1
@@ -116,11 +118,13 @@ load_stage2:
 
     ; Loading addresses for LBA FAT, ROOT, ROOT sector count and LBA Data respectively
     mov bx, [fat_reserved_sector_count]
+    ; FAT Sector index
     mov [bp - 2], bx
     mov al, byte [fat_table_count]
     mov ah, 0
     mul byte [fat_sectors_per_fat] 
     add ax, bx
+    ; Root dir index
     mov [bp - 4], ax
     mov ax, [fat_root_dir_entries]
     mov bx, 32
@@ -130,24 +134,28 @@ load_stage2:
     add ax, [fat_bytes_per_sector]
     mov dx, 0
     div word [fat_bytes_per_sector]
+    ;Sectors that root dirs take up
     mov [bp - 6], ax
     add ax, [bp - 4]
     mov [bp - 8], ax
     mov ax, [bp - 4]
-    ; Finding stage2
+
+    ; Finding file
     call lba_to_chs
 
 .ReadDirectories:
+    ; Loading root directories into memory
     mov ah, 0x2
     mov al, [bp - 4]
     mov dl, 0x0
-    mov bx, 0x500
+    ; Conventional memory mapping location
+    mov bx, FAT_LOCATION
     int 0x13
 
     ; Checking Errors
     jc handle_read_error
 
-    ; Read fat table
+    ; Read fat table into memory
     mov dx, [fat_root_dir_entries]
     ; Root Entry Index
     mov word [bp - 10], 0xFFFF
@@ -162,7 +170,7 @@ load_stage2:
     push dx
     mul bx
     pop dx
-    add ax, 0x500
+    add ax, FAT_LOCATION
     mov si, ax
     mov di, stage2_filename
     mov [bp - 10], cx
@@ -173,28 +181,45 @@ load_stage2:
     jne .CompareFileName
     inc cx
     cmp cx, 11
-    je .LoadFile
-    jmp .Loop
-.LoadFile:
-    ; Getting sector
+    jne .Loop
+.LoadStage2:
+    ; Getting sector. [bp - 10] contains the root entry
     mov ax, [bp - 10]
+    ; Pushing last fat cluster
+    push ax
     mul byte [fat_sectors_per_cluster]
     add ax, [bp - 8]
     call lba_to_chs
 
     ; Loading first sector
+.LoadMore:
     mov ah, 0x2
     mov dl, 0
     mov al, 1
     mov bx, 0x7E00
     int 0x13
-    jnc .Start
+    jnc .CheckIfNeededMore
     mov si, msg_stage2_read_error
     call print_string
     cli
     hlt
-.Start
+.CheckIfNeededMore:
+    ; Popping last fat cluster to compare to see if ended
+    pop ax
+    
+    ;mov ax, [bp - 10]
+
+    ;mul byte [fat_sectors_per_cluster]
+    ;add ax, [bp - 8]
+
+    ;call lba_to_chs
+    ;jmp .LoadMore
+.Start:
     ; Starting Stage2
+    ; Bug, we have to make sure we ahve the valid fat addr since its 12 bits
+    mov si, 0x7E00
+    mov dx, 500
+    call write
     jmp 0x7E0:0000
 stage2_not_found:
     mov si, msg_stage2_not_found
@@ -245,5 +270,6 @@ msg_stage2_not_found: db "Stage2 Not Found", ENDL, 0x00
 msg_read_sectors_failed: db "Read Sectors Failed", ENDL, 0x00
 msg_div_error: db "Div error", ENDL, 0x00
 msg_stage2_read_error:db "Read Sectors failed", ENDL, 0x00
+msg_starting: db "Starting", ENDL, 0x00
 times 510 - ($-$$) db 0
 dw 0xAA55

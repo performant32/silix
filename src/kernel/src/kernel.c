@@ -1,3 +1,9 @@
+#include "teletype.h"
+#include "video.h"
+
+extern void kend();
+
 void kmain(){
-    int i = 0;
+    PrintString("Kernel main called" ENDL);
+    kend();
 }

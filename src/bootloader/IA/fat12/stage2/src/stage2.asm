@@ -6,9 +6,9 @@ start:
     mov ax, 0x7E0
     mov ds, ax
     call _start
-
-    push test
-    call _PrintString
+.loop:
+    cli
+    hlt
+    jmp .loop
 section .data
 %define ENDL `\012`, `\015`
-test: db "Fully Loaded",ENDL, 0

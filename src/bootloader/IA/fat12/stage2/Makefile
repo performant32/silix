@@ -17,8 +17,8 @@ always:
 	mkdir -p $(OBJ_DIR)/asm
 	mkdir -p $(OBJ_DIR)/c
 stage2: always $(ASM_OBJS) $(C_OBJS)
-	$(LD) file {$(ASM_OBJS) $(C_OBJS)} $(LD_FLAGS) 
+	$(LD) option map=$(OBJ_DIR)/stage2 file {$(ASM_OBJS) $(C_OBJS)} $(LD_FLAGS) 
 $(OBJ_DIR)/asm/%.obj: $(SRC_DIR)/%.asm
 	$(ASM) $(ASM_FLAGS) $< -o $@
 $(OBJ_DIR)/c/%.obj: $(SRC_DIR)/%.c
-	$(CC) $(CFLAGS) $< -fo=$@
+	$(CC) $(CFLAGS) $< -fo=$@ @compile.rsp

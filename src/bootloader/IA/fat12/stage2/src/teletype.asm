@@ -2,7 +2,23 @@ bits 16
 section .code
 global _PrintChar
 global _PrintString
+global _Write
 
+; Args
+;   char* characters
+;   int size
+_Write:
+    enter 0
+    mov cx, 0
+    ;mov al, 
+.loop:    
+    cmp cx, [bp + 2]
+    je .end
+    inc cx
+    jmp .loop
+.end:
+    leave
+    ret
 _PrintString:
     enter 0
     cld
