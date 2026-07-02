@@ -13,6 +13,11 @@ void memcpy(void* destination, const void* src, size_t size){
         ((char*)(destination))[i] = ((char*)(src))[i];
     }
 }
+void memset(void* dest, int c, size_t n){
+    for(size_t i = 0; i < n; i++){
+        ((int*)(dest))[i] = (int)c;
+    }
+}
 int strcmp(char* str1, char* str2){
     size_t end1 = strlen(str1);
     size_t end2 = strlen(str2);

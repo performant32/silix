@@ -6,29 +6,32 @@
 #include "string.h"
 #include "panic.h"
 
-const char* rsdp_checksum = "RSD PTR";
+const char* rsdp_checksum = "RSD PTR ";
 
 void locate_apci_tables(){
     kprintf("Locating ACPI Tables\n");
 
     char* firstSearch = (char*)(0x40E);
     char* endSearch = (char*)(1024 * 1000);
-    bool located = false;
 
     //TODO: check other possible locations aswell
     while(firstSearch < endSearch){
-        if(strncmp(firstSearch, rsdp_checksum, strlen(rsdp_checksum)) == 0){
-            located = true;
-            kprintf("Located acpi tables at %p.\n", rsdp_checksum);
-            break;
+        if(strncmp(firstSearch, rsdp_checksum, 8) == 0){
+            goto located;
         }
         firstSearch++;
     }
-    if(!located){
-        kprintf("Failed to locate apci tables, could not find signature %s\n", rsdp_checksum);
-        kpanic();
-        return;
+    firstSearch = (char*)0xE0000;
+    endSearch = (char*)0xFFFFF;
+    while(firstSearch < endSearch){
+        if(strncmp(firstSearch, rsdp_checksum, 8) == 0){
+            goto located;
+        }
+        firstSearch++;
     }
+    kprintf("Failed to locate rsdp\n");
+    kpanic();
+located:
 
     struct rsdp_t* rsdp = (struct rsdp_t*)firstSearch;
 
@@ -40,4 +43,12 @@ void locate_apci_tables(){
         kprintf("Failed to validate apci, got %u\n", checksum);
         kpanic();
     }
+    kprintf("Located acpi tables at %p.\n", rsdp_checksum);
+    kprintf("OEM: ");
+    //TODO: implement %.*s
+    for(int i = 0; i < 6; i++){
+        kprintf("%c", (char)rsdp->oemid[i]);
+    }
+    kprintf("\n");
+    
 }

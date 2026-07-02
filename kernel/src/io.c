@@ -2,11 +2,13 @@
 
 #include <stdarg.h>
 #include <stdint.h>
+#include <limits.h>
 
 #include "video.h"
 #include "string.h"
 #include "panic.h"
 
+#define MIN(a,b) (a < b ? a : b)
 static bool is_digit(char c){
     return c >= '0' && c < '9';
 }
@@ -72,39 +74,60 @@ void kprintf(char* const fmt, ...){
             buffAt+=size;
             at++;
 
-            bool isNumber = false;
-            bool isSigned = false;
+            bool is_number = false;
+            bool is_signed = false;
             int base = 10;
             size_t number=0;
+            bool padded = false;
+            bool left_aligned = false;
+            int min_padding = 0;
+            int max_precision = INT_MAX;
 
             c = fmt[at];
+            if(c == '.'){
+                at++;
+                c = fmt[at];
+                if(c == '*'){
+                    max_precision = va_arg(args, int);
+                    at++;
+                }
+            }
+            if(c == '*'){
+                min_padding = (int)va_arg(args, int);
+                at++;
+            }
+            c = fmt[at];
             switch(c){
+                case 'c':{
+                    buff[buffAt++] = (char)va_arg(args, int);
+                    lastIn = ++at;
+                    continue;
+                }
                 case 's':{
                     const char* str = va_arg(args, const char*);
                     int len = strlen(str);
                     for(size_t i = 0; i < len; i++){
                         buff[buffAt++] = str[i];
                     }
-                    at++;
-                    lastIn = at;
+                    lastIn = ++at;
                     continue;
                 }
                 case 'x':{
-                    isNumber = true;
+                    is_number = true;
                     base = 16;
                     at++;
                     number = va_arg(args, int);
                     break;
                 }
                 case 'b':{
-                    isNumber = true;
+                    is_number = true;
                     base = 2;
                     at++;
                     number = va_arg(args, int);
                     break;
                 }
                 case 'o':{
-                    isNumber = true;
+                    is_number = true;
                     base = 8;
                     at++;
                     number = va_arg(args, int);
@@ -112,40 +135,50 @@ void kprintf(char* const fmt, ...){
                 }
                 case 'd':
                 case 'i':{
-                    isNumber = true;
-                    isSigned = true;
+                    is_number = true;
+                    is_signed = true;
+                    // int num = (int)va_arg(args, int);
+                    // if(num < 0){
+                    //     number |= (1 << (sizeof(size_t) * 8 - 1));
+                    // }
+                    //number |= num & ((1 << (sizeof(int) * 8 - 1)) - 1);
                     number = va_arg(args, int);
                     base = 10;
                     at++;
                     break;
                 }
                 case 'u':{
-                    isNumber = true;
-                    number = va_arg(args, int);
+                    is_number = true;
+                    number = va_arg(args, unsigned int);
                     base = 10;
                     at++;
                     break;
                 }
                 case 'p':{
-                    isNumber = true;
+                    is_number = true;
                     number = va_arg(args, size_t);
                     base = 16;
                     at++;
                     buff[buffAt++] = '0';
                     buff[buffAt++] = 'X';
+                    padded = true;
+                    left_aligned = true;
+                    min_padding = sizeof(size_t) * 2;
+                    
                     break;
                 }
             }
-            if(isNumber){
+            if(is_number){
                 if(at > len){
                     kpanic();
                     return;
                 }
 
-                if(isSigned){
-                    if(number < 0){
+                if(is_signed){
+                    int* num = &number;
+                    if(*num < 0){
                         buff[buffAt++] = '-';
-                        number = (-number) ;
+                        number = -(*num);
                     }
                 }
 
@@ -155,12 +188,26 @@ void kprintf(char* const fmt, ...){
                 do{
                     numberBuff[count++] = num_to_digit(number % base, base);
                     number /= base;
-                }while(number > 0);
+                }while(number != 0);
 
-                for(int i = count-1; i >= 0; i--){
-                    char c = numberBuff[i];
+                if(padded && left_aligned){
+                    for(int i = count; i < min_padding - count; i++){
+                        buff[buffAt++] = '0';
+                    }
+                }
+
+                int lastIndex = count - 1;
+                //for(int i = lastIndex; i >= 0; i--){
+                for(int i = 0; i < MIN(count, max_precision); i++){
+                    char c = numberBuff[lastIndex - i];
+                    //char c = numberBuff[i];
                     buff[buffAt++] = c;
-                    //vga_write_characters(&c, 1);
+                }
+
+                if(padded && !left_aligned){
+                    for(int i = count; i < min_padding - count; i++){
+                        buff[buffAt++] = '0';
+                    }
                 }
             }
             else{
