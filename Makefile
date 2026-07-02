@@ -12,18 +12,18 @@ ifeq ("$(BOOT_MODE)", "nographic")
 	BOOT_FLAGS:= -nographic
 else
 endif
-KERNEL_SRC:=src/kernel
+KERNEL_SRC:=kernel
 BIN_DIR:=bin/$(Arch)
 OBJ_DIR:=$(BIN_DIR)/objs
 ISO_DIR:=$(BIN_DIR)/iso
-BOOTLOADER_SRC:=src/bootloader/$(Arch)/$(BOOT_FS)
+BOOTLOADER_SRC:=bootloader/$(Arch)/$(BOOT_FS)
 STAGE1_BIN:=$(BIN_DIR)/$(BOOT_FS)/stage1
 STAGE2_BIN:=$(BIN_DIR)/$(BOOT_FS)/stage2
 STAGE2_OBJ:=$(OBJ_DIR)/$(BOOT_FS)/stage2
 KERNEL_BIN:=$(BIN_DIR)/kernel
 KERNEL_OBJ:=$(OBJ_DIR)/kernel
 
-.PHONY: default setup_flags build_floppy run_floppy help boot1 test run_nographic clean fat12
+.PHONY: default setup_flags build_floppy run_floppy help boot1 test run_nographic clean fat12 kernel run_kernel
 default: build_floppy run_floppy
 help:
 	@(echo build_floppy run_floppy run_nographic clean fat12)
@@ -46,7 +46,7 @@ stage2:
 kernel:
 	$(MAKE) -C $(KERNEL_SRC) BIN_DIR=$(abspath $(KERNEL_BIN)) OBJ_DIR=$(abspath $(KERNEL_OBJ))
 iso: stage1 kernel
-	$(MAKE) -C src/bootloader/grub STAGE1_BIN=$(abspath $(STAGE1_BIN)) KERNEL_BIN=$(abspath $(KERNEL_BIN)) BIN_DIR=$(abspath $(BIN_DIR)/)
+	$(MAKE) -C bootloader/grub STAGE1_BIN=$(abspath $(STAGE1_BIN)) KERNEL_BIN=$(abspath $(KERNEL_BIN)) BIN_DIR=$(abspath $(BIN_DIR)/)
 
 run_iso:
 	qemu-system-i386 $(BOOT_FLAGS) -cdrom $(BIN_DIR)/silix.iso -boot d
@@ -56,6 +56,10 @@ fat12:
 	$(MAKE) -C tools/fat12/ fat12 OUTPUT_DIR=$(abspath bin/tools)
 test:
 	$(ASM) $(ASM_FLAGS) $(BOOTLOADER_SRC)/test.asm -o $(BIN_DIR)/test.bin
+publish_kernel:
+	cp $(KERNEL_BIN)/kernel $(KERNEL_BIN)/kernel-001
+run_kernel: publish_kernel
+	qemu-system-i386 -kernel $(KERNEL_BIN)/kernel-001
 dump_kernel:
 	file $(KERNEL_BIN)/kernel.efi
 	hexdump -C $(KERNEL_BIN)/kernel.efi
