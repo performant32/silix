@@ -1,8 +1,9 @@
 #include "gdt.h"
 #include "video.h"
 #include "io.h"
-#include "apci.h"
+#include "acpi.h"
 #include "malloc.h"
+#include "apic.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -40,11 +41,12 @@ void test_malloc(){
 void kernelMain(void){
     vga_clear_screen();
     kprintf("Starting kernel\n");
-    kprintf("Decimal %d, unsigned %u, Octal: %o, Hex: %x\n", -123456, 123456, 8 * 8, 0b10101111);
+    kprintf("Decimal %d, unsigned %u, Octal: %o, Hex: %x\n", -1234567, 123456, 8 * 8, 0b10101111);
 
     test_malloc();
-    locate_apci_tables();
+    locate_acpi_tables();
     setup_gdt();
+    apic_init();
 
     return;
 }

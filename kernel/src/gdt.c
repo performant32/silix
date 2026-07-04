@@ -2,8 +2,7 @@
 #include "io.h"
 
 gdt_entry_t gdt_table[2] = (gdt_entry_t[2]){
-    (gdt_entry_t){0,0},
-    (gdt_entry_t){0,0}
+    {0}
 };
 
 void setup_gdt(){
@@ -14,5 +13,5 @@ void setup_gdt(){
     gdt_descriptor.size = sizeof(gdt_entry_t) - 1;
 
     load_gdt(&gdt_descriptor);
-    kprintf("Initialized gdt");
+    kprintf("Initialized gdt\n");
 }

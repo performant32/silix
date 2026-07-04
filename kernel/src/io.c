@@ -88,9 +88,10 @@ void kprintf(char* const fmt, ...){
                 at++;
                 c = fmt[at];
                 if(c == '*'){
-                    max_precision = va_arg(args, int);
+                    max_precision = (int)va_arg(args, int);
                     at++;
                 }
+                c = fmt[at];
             }
             if(c == '*'){
                 min_padding = (int)va_arg(args, int);
@@ -105,7 +106,11 @@ void kprintf(char* const fmt, ...){
                 }
                 case 's':{
                     const char* str = va_arg(args, const char*);
-                    int len = strlen(str);
+
+                    int len = max_precision;
+                    if(len == INT_MAX){
+                        len = strlen(str);
+                    }
                     for(size_t i = 0; i < len; i++){
                         buff[buffAt++] = str[i];
                     }
