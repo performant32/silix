@@ -1,0 +1,11 @@
+#ifndef PRIVILEGE_H
+#define PRIVILEGE_H
+
+enum rings_e{
+    KERNEL_PRIVILEGE=0,
+    DRIVER1_PRIVILEGE,
+    DRIVER2_PRIVILEGE,
+    USER_PRIVILEGE
+};
+
+#endif

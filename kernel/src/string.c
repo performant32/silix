@@ -1,4 +1,5 @@
 #include "string.h"
+#include "stdarg.h"
 
 #define MIN(a, b) (a < b ? a : b)
 #define MAX(a, b) (a > b ? a : b)
@@ -39,4 +40,11 @@ int strncmp(const char* str1, const char* str2, size_t n){
         }
     }
     return 0;
+}
+
+int snprintf(char* source, size_t n, const char* format, ...){
+    va_list args;
+    va_start(args, format);
+    // TODO: implement printf
+    va_end(args);
 }

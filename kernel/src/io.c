@@ -232,3 +232,7 @@ void kprintf(char* const fmt, ...){
     vga_write_characters(buff, buffAt);
     va_end(args);
 }
+
+void io_wait(){
+    out_port_byte(0x80, 0);
+}

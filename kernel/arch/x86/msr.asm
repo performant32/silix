@@ -1,7 +1,7 @@
 bits 32
 global rdmsr
 
-section .text:
+section .text
 
 rdmsr:
     mov ecx, eax

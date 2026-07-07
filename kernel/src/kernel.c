@@ -1,11 +1,14 @@
 #include "gdt.h"
+#include "pci.h"
 #include "video.h"
 #include "io.h"
 #include "acpi.h"
+#include "interrupts.h"
 #include "malloc.h"
 #include "apic.h"
-#include <stdio.h>
-#include <string.h>
+#include "idt.h"
+#include "string.h"
+#include "usb.h"
 
 void test_malloc(){
     kprintf("Testing malloc\n");
@@ -43,11 +46,14 @@ void kernelMain(void){
     kprintf("Starting kernel\n");
     kprintf("Decimal %d, unsigned %u, Octal: %o, Hex: %x\n", -1234567, 123456, 8 * 8, 0b10101111);
 
-    test_malloc();
+    //test_malloc();
     locate_acpi_tables();
     setup_gdt();
-    apic_init();
-
-    return;
+    kprintf("Done with gdt\n");
+    setup_idt();
+    //apic_init();
+    usb_init();
+    //pcie_init();
+    khalt();
 }
 

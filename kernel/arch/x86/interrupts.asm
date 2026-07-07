@@ -1,10 +1,12 @@
 bits 32
 
-section .text:
+section .text
 global khalt
 global are_interrupts_enabled
 global enable_interrupts
 global disable_interrupts
+global isr_wrapper
+extern interrupt_handler
 
 khalt:
     cli
@@ -22,3 +24,9 @@ enable_interrupts:
 disable_interrupts:
     cli
     ret
+isr_wrapper:
+    pushad
+    cld
+    call interrupt_handler
+    popad
+    iret

@@ -3,7 +3,13 @@
 #include "panic.h"
 #include "io.h"
 
+#include "i8259.h"
+
 void apic_init(){
+    // Larp apic and just use 8259
+    i8259_init();
+
+    /*
     kprintf("Initializing APIC\n");
     fadt_t* fadt = locate_acpi_table("FACP");
     if(!fadt){
@@ -27,4 +33,5 @@ void apic_init(){
     // }
 
     kprintf("Initialized APIC\n");
+    */
 }
