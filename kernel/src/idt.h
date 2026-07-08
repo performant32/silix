@@ -15,10 +15,10 @@
 
 enum itr_gate_type_e_{
     IDG_TASK=0x5,
-    IDG_16_BIT_GATE,
-    IDG_16_BIT_TRAP,
-    IDG_32_BIT_INTERRUPT,
-    IDG_32_BIT_TRAP
+    IDG_16_BIT_INTERRUPT_GATE=0x6,
+    IDG_16_BIT_TRAP_GATE=0x7,
+    IDG_32_BIT_INTERRUPT_GATE=0xE,
+    IDG_32_BIT_TRAP_GATE=0xF
 };
 
 typedef struct idt_entry_t{

@@ -7,7 +7,6 @@ reload_segment_registers:
     ; Reload cs register containing code selector
     jmp 0x8:.reload_cs
 .reload_cs:
-    ret
     ; Reload data segment registers
     mov ax, 0x10 ; 2 is our data segment
     mov ds, ax

@@ -6,6 +6,7 @@ BOOT_FS:=iso
 BOOT_MODE:=graphic
 # Modes are [IA, AArch]
 Arch=IA
+VERSION=001
 # Qemu Boot flags
 BOOT_FLAGS:= 
 ifeq ("$(BOOT_MODE)", "nographic")
@@ -45,10 +46,9 @@ stage2:
 	$(MAKE) -C $(BOOTLOADER_SRC)/stage2 stage2 OBJ_DIR=$(abspath $(STAGE2_OBJ)) BIN_DIR=$(abspath $(STAGE2_BIN))
 kernel:
 	$(MAKE) -C $(KERNEL_SRC) BIN_DIR=$(abspath $(KERNEL_BIN)) OBJ_DIR=$(abspath $(KERNEL_OBJ))
-iso: stage1 kernel
-	$(MAKE) -C bootloader/grub STAGE1_BIN=$(abspath $(STAGE1_BIN)) KERNEL_BIN=$(abspath $(KERNEL_BIN)) BIN_DIR=$(abspath $(BIN_DIR)/)
-
-run_iso:
+iso: kernel publish_kernel
+	$(MAKE) -C bl/grub STAGE1_BIN=$(abspath $(STAGE1_BIN)) VERSION=$(VERSION) KERNEL_BIN=$(abspath $(KERNEL_BIN)) BIN_DIR=$(abspath $(BIN_DIR)/)
+run_iso: 
 	qemu-system-i386 $(BOOT_FLAGS) -cdrom $(BIN_DIR)/silix.iso -boot d
 run_floppy:
 	qemu-system-x86_64 $(BOOT_FLAGS) -fda $(BIN_DIR)/silix.floppy -boot order=a
@@ -57,9 +57,9 @@ fat12:
 test:
 	$(ASM) $(ASM_FLAGS) $(BOOTLOADER_SRC)/test.asm -o $(BIN_DIR)/test.bin
 publish_kernel:
-	cp $(KERNEL_BIN)/kernel $(KERNEL_BIN)/kernel-001
+	cp $(KERNEL_BIN)/kernel $(KERNEL_BIN)/kernel-$(VERSION)
 run_kernel: publish_kernel
-	qemu-system-i386 -kernel $(KERNEL_BIN)/kernel-001
+	qemu-system-i386 -kernel $(KERNEL_BIN)/kernel-$(VERSION)
 dump_kernel:
 	file $(KERNEL_BIN)/kernel.efi
 	hexdump -C $(KERNEL_BIN)/kernel.efi

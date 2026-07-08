@@ -1,9 +1,11 @@
+#include "drivers/keyboard.h"
 #include "gdt.h"
 #include "pci.h"
 #include "video.h"
 #include "io.h"
 #include "acpi.h"
 #include "interrupts.h"
+#include "drivers/keyboard.h"
 #include "malloc.h"
 #include "apic.h"
 #include "idt.h"
@@ -41,7 +43,7 @@ void test_malloc(){
 
     kprintf("Done testing Malloc\n");
 }
-void kernelMain(void){
+void kernel_main(void){
     vga_clear_screen();
     kprintf("Starting kernel\n");
     kprintf("Decimal %d, unsigned %u, Octal: %o, Hex: %x\n", -1234567, 123456, 8 * 8, 0b10101111);
@@ -49,10 +51,13 @@ void kernelMain(void){
     //test_malloc();
     locate_acpi_tables();
     setup_gdt();
-    kprintf("Done with gdt\n");
     setup_idt();
-    //apic_init();
+    apic_init();
+    enable_interrupts();
     usb_init();
+    interrupt_test();
+    kprintf("Done initializing kernel\n");
+    keyboard_init();
     //pcie_init();
     khalt();
 }

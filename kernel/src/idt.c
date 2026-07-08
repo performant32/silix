@@ -26,11 +26,12 @@ void setup_idt(){
         0
     );
     kprintf("Segment is %d\n", segment);
-    idt_entry_t entry = create_idt_entry(offset, segment, true, 0, IDG_32_BIT_INTERRUPT);
-
-    //idt_entries[33] = *((uint64_t*)()&entry);
-    //idt_entries[33] = entry;
-    for(size_t i = 0; i < 256; i++){
+    for(size_t i = 0; i < 32; i++){
+        idt_entry_t entry = create_idt_entry(offset, segment, true, 0, IDG_32_BIT_INTERRUPT_GATE);
+        idt_entries[i] = entry;
+    }
+    for(size_t i = 32; i < 256; i++){
+        idt_entry_t entry = create_idt_entry(offset, segment, true, 0, IDG_32_BIT_INTERRUPT_GATE);
         idt_entries[i] = entry;
     }
 
@@ -38,8 +39,6 @@ void setup_idt(){
     idt_descriptor.size = (sizeof(idt_entry_t) * 256) - 1;
     idt_descriptor.offset = (size_t)idt_entries;
 
-    kprintf("Loading IDT %p with size %x\n", idt_descriptor.offset, idt_descriptor.size);
+    kprintf("Loading IDT %p with size %x, isr at %p\n", idt_descriptor.offset, idt_descriptor.size, (size_t)isr_wrapper);
     load_idt(&idt_descriptor);
-
-    //enable_interrupts();
 }

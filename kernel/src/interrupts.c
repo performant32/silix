@@ -2,5 +2,5 @@
 #include "io.h"
 
 void interrupt_handler(){
-    kprintf("Interrupt received");
+    kprintf("Interrupt received\n");
 }

@@ -7,4 +7,6 @@ extern bool disable_interrupts();
 extern void khalt();
 extern void isr_wrapper();
 void interrupt_handler();
+
+extern void interrupt_test();
 #endif

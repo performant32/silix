@@ -1,12 +1,15 @@
 bits 32
 
-section .text
 global khalt
 global are_interrupts_enabled
 global enable_interrupts
 global disable_interrupts
 global isr_wrapper
+global interrupt_test
+
 extern interrupt_handler
+
+section .text
 
 khalt:
     cli
@@ -30,3 +33,6 @@ isr_wrapper:
     call interrupt_handler
     popad
     iret
+interrupt_test:
+    int 0x49
+    ret
