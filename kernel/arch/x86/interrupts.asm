@@ -21,12 +21,14 @@ are_interrupts_enabled:
     and eax, 0x200
     shr eax, 9
     ret
+
 enable_interrupts:
     sti
     ret
 disable_interrupts:
     cli
     ret
+
 isr_wrapper:
     pushad
     cld
@@ -34,5 +36,5 @@ isr_wrapper:
     popad
     iret
 interrupt_test:
-    int 0x49
+    int 33
     ret

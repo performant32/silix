@@ -5,6 +5,7 @@
 #include "io.h"
 #include "acpi.h"
 #include "interrupts.h"
+#include "drivers/ps2.h"
 #include "drivers/keyboard.h"
 #include "malloc.h"
 #include "apic.h"
@@ -48,7 +49,6 @@ void kernel_main(void){
     kprintf("Starting kernel\n");
     kprintf("Decimal %d, unsigned %u, Octal: %o, Hex: %x\n", -1234567, 123456, 8 * 8, 0b10101111);
 
-    //test_malloc();
     locate_acpi_tables();
     setup_gdt();
     setup_idt();
@@ -56,9 +56,12 @@ void kernel_main(void){
     enable_interrupts();
     usb_init();
     interrupt_test();
-    kprintf("Done initializing kernel\n");
+    ps2_init();
     keyboard_init();
+    kprintf("Done initializing kernel\n");
+    vga_clear_screen();
     //pcie_init();
-    khalt();
+    while(true){}
+    //khalt();
 }
 

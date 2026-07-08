@@ -34,7 +34,6 @@ void vga_write_characters(char* const data, size_t size){
             row++;
             if(row >= VGA_HEIGHT){
                 vga_clear_screen();
-                row = 0;
             }
         }
     }

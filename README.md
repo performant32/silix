@@ -16,7 +16,7 @@ Generate the kernel image into `bin/IA/kernel`:
 
 ## Run kernel directly
 Copies the kernel image with a bootable filename for qemu  
-runs kernel directly with --kernel flag:  
+runs kernel directly with --kernel flag:
 `make run_kernel`  
 
 ## Create ISO

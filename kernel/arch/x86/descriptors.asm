@@ -7,6 +7,8 @@ load_gdt:
     mov eax, [esp+4]
     lgdt [eax]
 
+    jmp 0x8:.reload_cs
+.reload_cs:
     ; Reload data segment registers
     mov ax, 0x10 ; 2 is our data segment
     mov ds, ax
@@ -15,8 +17,6 @@ load_gdt:
     mov gs, ax
     mov ss, ax
 
-    jmp 0x8:.reload_cs
-.reload_cs:
     ret
 
 load_idt:
