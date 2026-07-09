@@ -10,8 +10,6 @@ segment_descriptor_t gdt_table[3] = (segment_descriptor_t[3]){
 };
 
 void setup_gdt(){
-    kprintf("Setting up gdt\n");
-
     struct gdt_descriptor_t gdt_descriptor = (struct gdt_descriptor_t){0, 0};
     gdt_descriptor.offset = (size_t)gdt_table;
     gdt_descriptor.size = (sizeof(segment_descriptor_t) * 3) - 1;
@@ -45,11 +43,8 @@ void setup_gdt(){
     access_byte|=BITS(0, SEGMENT_ACCESS_DC_BIT, SEGMENT_ACCESS_DC_BIT_WIDTH);
     access_byte|=BITS(1, SEGMENT_ACCESS_RW_BIT, SEGMENT_ACCESS_RW_BIT_WIDTH);
     access_byte|=BITS(1, SEGMENT_ACCESS_A_BIT, SEGMENT_ACCESS_A_BIT_WIDTH);
-    kprintf("Data segment access byte %x\n", access_byte);
 
     gdt_table[2] = create_descriptor(base, limit, flags, access_byte);
-    kprintf("GDT Descriptor contains %x %x\n", gdt_descriptor.offset, gdt_descriptor.size);
-    kprintf("GDT descriptor at is %p, table is %p\n", &gdt_descriptor, gdt_table);
 
     disable_interrupts();
     load_gdt(&gdt_descriptor);

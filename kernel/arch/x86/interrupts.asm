@@ -5,6 +5,9 @@ global are_interrupts_enabled
 global enable_interrupts
 global disable_interrupts
 global isr_wrapper
+global interrupt_fault_wrapper
+global interrupt_trap_wrapper
+global interrupt_abort_wrapper
 global interrupt_test
 
 extern interrupt_handler
@@ -12,7 +15,6 @@ extern interrupt_handler
 section .text
 
 khalt:
-    cli
     hlt
     jmp khalt
 are_interrupts_enabled:
@@ -30,11 +32,20 @@ disable_interrupts:
     ret
 
 isr_wrapper:
+    ;sub esp
+    ;fnsave esp
     pushad
     cld
     call interrupt_handler
     popad
+    ;frstor esp
+    iret
+interrupt_fault_wrapper:
+    iret
+interrupt_trap_wrapper:
+    iret
+interrupt_abort_wrapper:
     iret
 interrupt_test:
-    int 33
+    int 32
     ret

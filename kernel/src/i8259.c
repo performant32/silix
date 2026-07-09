@@ -9,6 +9,9 @@
 #define SLAVE_PIC_COMMAND 0xA0
 #define SLAVE_PIC_DATA 0xA1
 
+#define PIC_READ_ISR 0x0b
+#define PIC_READ_IRR 0x0a
+
 // ICW4 will be present
 #define ICW1_ICW4 0x01
 #define ICW1_SINGLE 0x02    // SIngle cascade mode
@@ -61,6 +64,17 @@ void i8259_disable(){
     out_port_byte(MASTER_PIC_DATA, 0xFF);
     out_port_byte(SLAVE_PIC_DATA, 0xFF);
     kprintf("Disabled I8259\n");
+}
+static uint8_t read_irq_reg(int ocw3){
+    out_port_byte(MASTER_PIC_COMMAND, ocw3);
+    out_port_byte(SLAVE_PIC_COMMAND, ocw3);
+    return (in_port_b(SLAVE_PIC_DATA) << 8) | in_port_b(MASTER_PIC_COMMAND);
+}
+uint16_t i8259_get_irr(){
+    return read_irq_reg(PIC_READ_IRR);
+}
+uint16_t i8259_get_isr(){
+    return read_irq_reg(PIC_READ_ISR);
 }
 
 void i8259_send_eoi(uint8_t irq){

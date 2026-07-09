@@ -1,6 +1,8 @@
 #include "drivers/keyboard.h"
 #include "gdt.h"
+#include "multiboot.h"
 #include "pci.h"
+#include "pit.h"
 #include "video.h"
 #include "io.h"
 #include "acpi.h"
@@ -12,6 +14,7 @@
 #include "idt.h"
 #include "string.h"
 #include "usb.h"
+#include <stddef.h>
 
 void test_malloc(){
     kprintf("Testing malloc\n");
@@ -44,24 +47,28 @@ void test_malloc(){
 
     kprintf("Done testing Malloc\n");
 }
-void kernel_main(void){
+void kernel_main(multiboot1_header_t* multiboot_header){
     vga_clear_screen();
     kprintf("Starting kernel\n");
-    kprintf("Decimal %d, unsigned %u, Octal: %o, Hex: %x\n", -1234567, 123456, 8 * 8, 0b10101111);
+    uint32_t flags = multiboot_header->flags;
+    kprintf("Multiboot at %p with flags %b\n", (size_t)multiboot_header, flags);
+
+    if(flags & (1 << MULTIBOOT_BOOT_LOADER_NAME_BIT)){
+        const char* name = (const char*)multiboot_header->boot_loader_name;
+        kprintf("Got bootloader name \"%s\" addr %p offset %d\n", name, name, offsetof(multiboot1_header_t, boot_loader_name));
+    }
 
     locate_acpi_tables();
     setup_gdt();
     setup_idt();
     apic_init();
-    enable_interrupts();
+    pit_init();
     usb_init();
-    interrupt_test();
     ps2_init();
     keyboard_init();
+
+    enable_interrupts();
     kprintf("Done initializing kernel\n");
-    vga_clear_screen();
-    //pcie_init();
-    while(true){}
-    //khalt();
+    khalt();
 }
 

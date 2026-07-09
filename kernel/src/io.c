@@ -124,13 +124,6 @@ void kprintf(char* const fmt, ...){
                     number = va_arg(args, int);
                     break;
                 }
-                case 'b':{
-                    is_number = true;
-                    base = 2;
-                    at++;
-                    number = va_arg(args, int);
-                    break;
-                }
                 case 'o':{
                     is_number = true;
                     base = 8;
@@ -156,6 +149,13 @@ void kprintf(char* const fmt, ...){
                     is_number = true;
                     number = va_arg(args, unsigned int);
                     base = 10;
+                    at++;
+                    break;
+                }
+                case 'b':{
+                    is_number = true;
+                    number = va_arg(args, unsigned int);
+                    base = 2;
                     at++;
                     break;
                 }

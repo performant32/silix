@@ -5,6 +5,16 @@ void ps2_init(){
     kprintf("Initialized ps2\n");
 }
 
-void ps2_read_byte(){
-    in_port_b(PS2_PORT);
+uint8_t ps2_read_status(){
+    return in_port_b(PS2_STATUS_PORT);
+}
+
+uint8_t ps2_read_data_byte(){
+    uint8_t status = ps2_read_status();
+
+    return in_port_b(PS2_RW_PORT);
+}
+
+void ps2_issue_command(int command){
+
 }

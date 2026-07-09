@@ -10,6 +10,8 @@ void i8259_send_eoi(uint8_t irq);
 
 uint8_t i8259_get_master_mask();
 uint8_t i8259_get_slave_mask();
+uint16_t i8259_get_irr();
+uint16_t i8259_get_isr();
 
 void i8259_set_mask(uint8_t irq_line);
 void i8259_clear_mask(uint8_t irq_line);

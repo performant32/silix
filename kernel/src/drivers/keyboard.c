@@ -21,5 +21,5 @@ void keyboard_init(){
 }
 
 void keyboard_interrupt(){
-    ps2_read_byte();
+    ps2_read_data_byte();
 }
