@@ -4,7 +4,7 @@
 #include <stdint.h>
 void i8259_init();
 void i8259_disable();
-void i8259_remap(int offset1, int offset2);
+void i8259_remap(uint8_t offset1, uint8_t offset2);
 
 void i8259_send_eoi(uint8_t irq);
 

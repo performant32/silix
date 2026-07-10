@@ -55,6 +55,7 @@ void* kmalloc(size_t size){
     return NULL;
 }
 void kfree(void* ptr){
+    if(!ptr)return;
     heap_block_t* heap_block = (heap_block_t*)((size_t)(ptr) - sizeof(heap_block_t));
     heap_block->is_free = true;
 }

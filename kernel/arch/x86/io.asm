@@ -12,6 +12,13 @@ out_port_byte:
     outsb
     pop esi
     ret
+out_port_word:
+    mov dx, [esp+4]
+    push esi
+    lea esi, [esp+8]
+    outsw
+    pop esi
+    ret
 in_port_b:
     mov eax, 0
     mov dx, [esp+4]

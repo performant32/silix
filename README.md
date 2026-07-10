@@ -31,12 +31,23 @@ Runs a packaged ISO in the kernel bin directory
 Currently we are booting the kernel image directly with qemu with multi boot specification
 
 ## Current Features
+* PIC Support(i8259)
+* VGA Text support
 
 ## Future Features
-* Interrupts
+* Interrupts through APIC
 * PCI & PCIE support
 * USB Support
-* Graphics Mode
+* Graphics Mode(VGA)
 * VFS
 * Fat32 or Fat16
+* UserMode/Ring3
+* System Calls
+* GPU Driver
 
+## Supported Architectures
+* x86
+
+## Future Architectures
+* x86_64
+* arm64

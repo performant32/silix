@@ -20,6 +20,7 @@ always:
 	mkdir -p $(BIN_DIR)/
 	mkdir -p $(BIN_DIR)/c/
 	mkdir -p $(BIN_DIR)/c/drivers
+	mkdir -p $(BIN_DIR)/c/containers
 	mkdir -p $(BIN_DIR)/asm/
 $(BIN_DIR)/c/%.o: $(SRC_DIR)/%.c
 	$(CC) -c $< -o $@ $(CFLAGS)

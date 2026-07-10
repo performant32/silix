@@ -43,8 +43,10 @@ enum ps2_controller_commands_e{
 void ps2_init();
 
 uint8_t ps2_read_data_byte();
+void ps2_acknowledge();
 uint8_t ps2_read_status();
 
-void ps2_issue_command(int command);
+void ps2_send_pending();
+void ps2_issue_command(uint8_t command);
 
 #endif

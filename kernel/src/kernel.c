@@ -67,8 +67,8 @@ void kernel_main(multiboot1_header_t* multiboot_header){
     ps2_init();
     keyboard_init();
 
-    enable_interrupts();
     kprintf("Done initializing kernel\n");
+    enable_interrupts();
     khalt();
 }
 

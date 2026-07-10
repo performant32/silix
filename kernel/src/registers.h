@@ -43,9 +43,9 @@ typedef struct registers_t{
     uint32_t esp;
     uint32_t ebp;
     uint32_t esi;
-
 }__attribute__((packed)) registers_t;
 
 typedef uint32_t flag_type;
 extern flag_type get_flags();
+
 #endif

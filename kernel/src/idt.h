@@ -21,6 +21,7 @@ enum itr_gate_type_e_{
     IDG_32_BIT_TRAP_GATE=0xF
 };
 
+
 typedef struct idt_entry_t{
     uint16_t offset_low;
 

@@ -4,13 +4,14 @@ global khalt
 global are_interrupts_enabled
 global enable_interrupts
 global disable_interrupts
-global isr_wrapper
-global interrupt_fault_wrapper
-global interrupt_trap_wrapper
-global interrupt_abort_wrapper
+
+global isr_common
+global spurious_interrupt
+extern interrupt_handler
+
 global interrupt_test
 
-extern interrupt_handler
+extern irq_handler
 
 section .text
 
@@ -31,21 +32,47 @@ disable_interrupts:
     cli
     ret
 
-isr_wrapper:
+%macro IRQ_HANDLER 1
+    global irq%1
+    irq%1:
+        push %1
+        jmp isr_common
+%endmacro
+
+IRQ_HANDLER 0
+IRQ_HANDLER 1
+IRQ_HANDLER 2
+IRQ_HANDLER 3
+IRQ_HANDLER 4
+IRQ_HANDLER 5
+IRQ_HANDLER 6
+IRQ_HANDLER 7
+IRQ_HANDLER 8
+IRQ_HANDLER 9
+IRQ_HANDLER 10
+IRQ_HANDLER 11
+IRQ_HANDLER 12
+IRQ_HANDLER 13
+IRQ_HANDLER 14
+IRQ_HANDLER 15
+
+isr_common:
     ;sub esp
     ;fnsave esp
     pushad
     cld
+
     call interrupt_handler
     popad
+    add esp, 4
     ;frstor esp
     iret
-interrupt_fault_wrapper:
-    iret
-interrupt_trap_wrapper:
-    iret
-interrupt_abort_wrapper:
-    iret
+
+spurious_interrupt:
+    ;cli
+    push 167
+    jmp isr_common
+
 interrupt_test:
     int 32
     ret

@@ -6,6 +6,7 @@
 void kprintf(char* const fmt, ...);
 
 extern void out_port_byte(uint16_t port, uint8_t val);
+extern void out_port_word(uint16_t port, uint16_t val);
 
 extern uint8_t in_port_b(uint16_t port);
 extern uint16_t in_port_w(uint16_t port);
