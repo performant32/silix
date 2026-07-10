@@ -33,7 +33,7 @@ extern void irq14();
 extern void irq15();
 extern void spurious_interrupt();
 
-void interrupt_handler(interrupt_registers_t registers);
+void interrupt_handler(interrupt_registers_t* registers);
 void irq_install_handler(int irq_line, void (*handler)(registers_t*));
 
 extern void interrupt_test();

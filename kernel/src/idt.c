@@ -26,6 +26,7 @@ void setup_idt(){
     for(size_t i = 0; i < 256; i++){
         idt_entries[i] = create_idt_entry((uintptr_t)spurious_interrupt, segment_selector, true, 0, IDG_32_BIT_INTERRUPT_GATE);
     }
+
     idt_entries[IRQ_BEGIN + 0] =  create_idt_entry((size_t)irq0, segment_selector, true, 0, IDG_32_BIT_INTERRUPT_GATE);
     idt_entries[IRQ_BEGIN + 1] =  create_idt_entry((size_t)irq1, segment_selector, true, 0, IDG_32_BIT_INTERRUPT_GATE);
     idt_entries[IRQ_BEGIN + 2] =  create_idt_entry((size_t)irq2, segment_selector, true, 0, IDG_32_BIT_INTERRUPT_GATE);

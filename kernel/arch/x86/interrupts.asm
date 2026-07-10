@@ -59,10 +59,12 @@ IRQ_HANDLER 15
 isr_common:
     ;sub esp
     ;fnsave esp
-    pushad
-    cld
 
+    pushad
+    push esp
+    cld
     call interrupt_handler
+    add esp, 4
     popad
     add esp, 4
     ;frstor esp

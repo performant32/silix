@@ -6,8 +6,8 @@
 
 static void(*irqs[16])(registers_t*)={0};
 
-void interrupt_handler(interrupt_registers_t interrupt_registers){
-    uint8_t irq_line = interrupt_registers.interrupt_number;
+void interrupt_handler(interrupt_registers_t* interrupt_registers){
+    uint8_t irq_line = interrupt_registers->interrupt_number;
     if(irq_line == 255){
         //return;
     }
@@ -28,9 +28,9 @@ void interrupt_handler(interrupt_registers_t interrupt_registers){
         i8259_send_eoi(irq_line);
         return;
     }
-    handler(&interrupt_registers.cpu_registers);
+    handler(&interrupt_registers->cpu_registers);
 
-    i8259_send_eoi(interrupt_registers.interrupt_number);
+    i8259_send_eoi(interrupt_registers->interrupt_number);
     kprintf("Interrupt Ended\n");
 }
 void interrupt_exception_handler(registers_t registers){

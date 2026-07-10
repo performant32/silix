@@ -8,14 +8,14 @@ section .text
 out_port_byte:
     mov dx, [esp+4]
     push esi
-    lea esi, [esp+8]
+    lea esi, [esp+12]
     outsb
     pop esi
     ret
 out_port_word:
     mov dx, [esp+4]
     push esi
-    lea esi, [esp+8]
+    lea esi, [esp+12]
     outsw
     pop esi
     ret
