@@ -62,7 +62,7 @@ void kernel_main(multiboot1_header_t* multiboot_header){
         kprintf("Got bootloader name \"%s\" addr %p offset %d\n", name, name, offsetof(multiboot1_header_t, boot_loader_name));
     }
 
-    locate_acpi_tables();
+    //locate_acpi_tables();
     setup_gdt();
     setup_idt();
     apic_init();
