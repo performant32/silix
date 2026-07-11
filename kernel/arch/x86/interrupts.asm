@@ -7,6 +7,7 @@ global disable_interrupts
 
 global isr_common
 global spurious_interrupt
+global interrupt_exception
 extern interrupt_handler
 
 global interrupt_test
@@ -31,11 +32,11 @@ enable_interrupts:
 disable_interrupts:
     cli
     ret
-
+%define IRQ_BEGIN 32
 %macro IRQ_HANDLER 1
     global irq%1
     irq%1:
-        push %1
+        push (IRQ_BEGIN + %1)
         jmp isr_common
 %endmacro
 
@@ -65,14 +66,20 @@ isr_common:
     cld
     call interrupt_handler
     add esp, 4
+
     popad
     add esp, 4
     ;frstor esp
     iret
 
+interrupt_exception:
+    ;cli
+    push 244
+    jmp isr_common
+
 spurious_interrupt:
     ;cli
-    push 167
+    push 255
     jmp isr_common
 
 interrupt_test:

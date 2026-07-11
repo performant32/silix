@@ -3,38 +3,57 @@
 
 #include "registers.h"
 
+//TODO: Handle other architectures
+typedef struct interrupt_stack_frame{
+    uint32_t flags;
+    uint32_t cs;
+    union{
+        uint32_t eip;
+        struct{
+            uint16_t lip;
+            uint16_t hip;
+        };
+    };
+}__attribute__((packed)) interrupt_stack_frame;
+
 typedef struct interrupt_registers_t{
-    registers_t cpu_registers;
+    general_registers_t cpu_registers;
     uint32_t interrupt_number;
 }__attribute__((packed)) interrupt_registers_t;
 
 #define IRQ_BEGIN 32
 
-extern bool are_interrupts_enabled();
-extern bool enable_interrupts();
-extern bool disable_interrupts();
-extern void khalt();
+bool are_interrupts_enabled();
+bool enable_interrupts();
+bool disable_interrupts();
+void khalt();
 
-extern void irq0();
-extern void irq1();
-extern void irq2();
-extern void irq3();
-extern void irq4();
-extern void irq5();
-extern void irq6();
-extern void irq7();
-extern void irq8();
-extern void irq9();
-extern void irq10();
-extern void irq11();
-extern void irq12();
-extern void irq13();
-extern void irq14();
-extern void irq15();
-extern void spurious_interrupt();
+void irq0();
+void irq1();
+void irq2();
+void irq3();
+void irq4();
+void irq5();
+void irq6();
+void irq7();
+void irq8();
+void irq9();
+void irq10();
+void irq11();
+void irq12();
+void irq13();
+void irq14();
+void irq15();
+void spurious_interrupt();
+void interrupt_exception();
 
+// Called from the isr after necessary values are pushed onto stack
 void interrupt_handler(interrupt_registers_t* registers);
-void irq_install_handler(int irq_line, void (*handler)(registers_t*));
+
+// Installs an interupt handler for each interrupt request line(not number)
+void irq_install_handler(int irq_line, void (*handler)(general_registers_t*));
+// Installs an exception handler for interrupts 0-31
+void irq_install_exception_handler(int exception, void (*handler)(general_registers_t*));
 
 extern void interrupt_test();
 #endif

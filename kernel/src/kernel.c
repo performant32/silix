@@ -3,6 +3,8 @@
 #include "multiboot.h"
 #include "pci.h"
 #include "pit.h"
+#include "scheduler.h"
+#include "tcb.h"
 #include "video.h"
 #include "io.h"
 #include "acpi.h"
@@ -47,6 +49,8 @@ void test_malloc(){
 
     kprintf("Done testing Malloc\n");
 }
+void kernel_thread_start1();
+void kernel_thread_start2();
 void kernel_main(multiboot1_header_t* multiboot_header){
     vga_clear_screen();
     kprintf("Starting kernel\n");
@@ -69,6 +73,23 @@ void kernel_main(multiboot1_header_t* multiboot_header){
 
     kprintf("Done initializing kernel\n");
     enable_interrupts();
+    
+    tcb_t* kernel_thread_1 = create_tcb(kernel_thread_start1);
+    add_task(kernel_thread_1);
+    tcb_t* kernel_thread_2 = create_tcb(kernel_thread_start1);
+    add_task(kernel_thread_2);
     khalt();
 }
 
+void kernel_thread_start1(){
+    while(true){
+        kprintf("Kernel Thread 1\n");
+        khalt();
+    }
+}
+void kernel_thread_start2(){
+    while(true){
+        kprintf("Kernel Thread 2\n");
+        khalt();
+    }
+}

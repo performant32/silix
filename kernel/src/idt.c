@@ -23,8 +23,12 @@ void setup_idt(){
         0
     );
     //TODO: some are traps
-    for(size_t i = 0; i < 256; i++){
+    for(size_t i = 32; i < 256; i++){
         idt_entries[i] = create_idt_entry((uintptr_t)spurious_interrupt, segment_selector, true, 0, IDG_32_BIT_INTERRUPT_GATE);
+    }
+
+    for(size_t i = 0; i < 32; i++){
+        idt_entries[i] = create_idt_entry((uintptr_t)interrupt_exception, segment_selector, true, 0, IDG_32_BIT_TRAP_GATE);
     }
 
     idt_entries[IRQ_BEGIN + 0] =  create_idt_entry((size_t)irq0, segment_selector, true, 0, IDG_32_BIT_INTERRUPT_GATE);

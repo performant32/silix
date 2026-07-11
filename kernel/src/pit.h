@@ -1,5 +1,7 @@
 #ifndef PIT_H
 #define PIT_H
+#include "interrupts.h"
+#include "registers.h"
 
 // Intel 8253/8254
 //
@@ -38,5 +40,5 @@
 // Channel 2 is connected to pc speaker
 // 
 void pit_init();
-
+void pit_interrupt(general_registers_t* registers);
 #endif

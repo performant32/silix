@@ -32,7 +32,7 @@ enum flags_register_bits_e{
 
 #define IO_FLAG_BIT_WIDTH 2
 
-typedef struct registers_t{
+typedef struct general_registers_t{
     // Reverse order since struct first fields have lower memory address
     uint32_t edi;
     uint32_t eax;
@@ -43,7 +43,7 @@ typedef struct registers_t{
     uint32_t esp;
     uint32_t ebp;
     uint32_t esi;
-}__attribute__((packed)) registers_t;
+}__attribute__((packed)) general_registers_t;
 
 typedef uint32_t flag_type;
 extern flag_type get_flags();

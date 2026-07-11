@@ -1,5 +1,6 @@
 #include "malloc.h"
 #include <stdint.h>
+#include <string.h>
 #include "panic.h"
 
 // Yes very simple heap
@@ -53,6 +54,11 @@ void* kmalloc(size_t size){
         current_block = current_block->next;
     }
     return NULL;
+}
+void* kzmalloc(size_t size){
+    void* data = kmalloc(size);
+    if(data)memset(data, 0, size);
+    return data;
 }
 void kfree(void* ptr){
     if(!ptr)return;

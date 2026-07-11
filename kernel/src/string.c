@@ -16,7 +16,7 @@ void memcpy(void* destination, const void* src, size_t size){
 }
 void memset(void* dest, int c, size_t n){
     for(size_t i = 0; i < n; i++){
-        ((int*)(dest))[i] = (int)c;
+        ((char*)(dest))[i] = (char)c;
     }
 }
 int strcmp(char* str1, char* str2){

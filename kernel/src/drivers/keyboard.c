@@ -4,6 +4,7 @@
 #include "registers.h"
 #include "i8259.h"
 #include "ps2.h"
+#include <stdio.h>
 
 const char* row1 =
     "qwertyuiop"
@@ -37,7 +38,7 @@ void keyboard_init(){
     // Only handling scan code set 1
 }
 
-void keyboard_interrupt(registers_t* registers){
+void keyboard_interrupt(general_registers_t* registers){
     uint8_t data = ps2_read_data_byte();
     if(data == KEYBOARD_COMMAND_ACK){
         ps2_acknowledge();
@@ -57,4 +58,9 @@ void keyboard_interrupt(registers_t* registers){
     }
     if(button == '\0')return;
     kprintf("Keyboard issued %c\n", button);
+    /*
+     * TODO: handle exceptions
+    int x = 5;
+    kprintf("Div by 0\n", x / 0);
+    */
 }

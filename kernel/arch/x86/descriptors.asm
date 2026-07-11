@@ -6,7 +6,7 @@ section .text
 load_gdt:
     mov eax, [esp+4]
     lgdt [eax]
-
+reload_segments:
     jmp 0x8:.reload_cs
 .reload_cs:
     ; Reload data segment registers
