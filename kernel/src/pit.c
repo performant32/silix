@@ -2,6 +2,7 @@
 #include "interrupts.h"
 #include "io.h"
 #include <stdint.h>
+#include "drivers/vga.h"
 
 void pit_init(){
     uint16_t reload_value = 65535;
@@ -13,5 +14,6 @@ void pit_init(){
     kprintf("Initialized PIT with command 0x%x\n", command);
 }
 void pit_interrupt(general_registers_t* registers){
-    kprintf("PIT Test\n");
+    //kprintf("PIT Test\n");
+    // TODO: Task switch
 }

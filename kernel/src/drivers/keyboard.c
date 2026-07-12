@@ -1,6 +1,7 @@
 #include "keyboard.h"
 #include "io.h"
 #include "interrupts.h"
+#include "vga.h"
 #include "registers.h"
 #include "i8259.h"
 #include "ps2.h"

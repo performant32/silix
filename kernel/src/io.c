@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <limits.h>
 
-#include "video.h"
 #include "string.h"
 #include "panic.h"
 
@@ -229,7 +228,7 @@ void kprintf(char* const fmt, ...){
     memcpy(buff + buffAt, fmt + lastIn, size);
     buffAt+=size;
 
-    vga_write_characters(buff, buffAt);
+    //vga_write_characters(buff, buffAt);
     va_end(args);
 }
 

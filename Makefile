@@ -2,19 +2,26 @@ ASM := nasm
 ASM_FLAGS := -f bin
 # Boot Options are [floppy]
 BOOT_FS:=iso
-# Modes are [graphic, nographic]
-BOOT_MODE:=graphic
 # Modes are [IA, AArch]
 Arch=IA
 VERSION=001
+
 # Qemu Boot flags
 BOOT_FLAGS:= 
-ifeq ("$(BOOT_MODE)", "nographic")
-	BOOT_FLAGS:= -nographic
-else
+
+OTHER_FILES := $(wildcard .*.smk)
+ifdef OTHER_FILES
+	include $(OTHER_FILES)
 endif
+
 KERNEL_SRC:=kernel
 BIN_DIR:=bin/$(Arch)
+ifeq ("$(BUILD_TYPE)", "debug")
+	BIN_DIR:=$(BIN_DIR)/debug
+else
+	BIN_DIR:=$(BIN_DIR)/release
+endif
+
 OBJ_DIR:=$(BIN_DIR)/objs
 ISO_DIR:=$(BIN_DIR)/iso
 BOOTLOADER_SRC:=bootloader/$(Arch)/$(BOOT_FS)
@@ -24,7 +31,7 @@ STAGE2_OBJ:=$(OBJ_DIR)/$(BOOT_FS)/stage2
 KERNEL_BIN:=$(BIN_DIR)/kernel
 KERNEL_OBJ:=$(OBJ_DIR)/kernel
 
-.PHONY: default setup_flags build_floppy run_floppy help boot1 test run_nographic clean fat12 kernel run_kernel
+.PHONY: default setup_flags build_floppy run_floppy help boot1 test run_nographic clean fat12 kernel run_kernel config
 default: build_floppy run_floppy
 help:
 	@(echo build_floppy run_floppy run_nographic clean fat12)
@@ -40,14 +47,17 @@ build_floppy: make_files stage1 stage2 test
 	dd if=$(STAGE1_BIN)/stage1.bin of=$(BIN_DIR)/silix.floppy bs=512 count=1 conv=notrunc
 	mcopy -i $(BIN_DIR)/silix.floppy $(BIN_DIR)/test.bin ::/TEST.BIN
 	echo "Hello World Test" | dd ibs=11 obs=512 seek=30 of=$(BIN_DIR)/silix.floppy count=1 conv=notrunc
+config:
+	@echo "Building config"
+	python3 tools/scripts/makeconfig.py
 stage1:
 	$(MAKE) -C $(BOOTLOADER_SRC)/stage1 stage1 OBJ_DIR=$(abspath $(STAGE1_OBJ)) BIN_DIR=$(abspath $(STAGE1_BIN))
 stage2:
 	$(MAKE) -C $(BOOTLOADER_SRC)/stage2 stage2 OBJ_DIR=$(abspath $(STAGE2_OBJ)) BIN_DIR=$(abspath $(STAGE2_BIN))
 kernel:
-	$(MAKE) -C $(KERNEL_SRC) BIN_DIR=$(abspath $(KERNEL_BIN)) OBJ_DIR=$(abspath $(KERNEL_OBJ))
+	$(MAKE) -C $(KERNEL_SRC) BIN_DIR=$(abspath $(KERNEL_BIN)) OBJ_DIR=$(abspath $(KERNEL_OBJ)) IS_DEBUG="$(IS_DEBUG)"
 iso: kernel publish_kernel
-	$(MAKE) -C bl/grub STAGE1_BIN=$(abspath $(STAGE1_BIN)) VERSION=$(VERSION) KERNEL_BIN=$(abspath $(KERNEL_BIN)) BIN_DIR=$(abspath $(BIN_DIR)/)
+	$(MAKE) -C bl/grub STAGE1_BIN=$(abspath $(STAGE1_BIN)) VERSION=$(VERSION) KERNEL_BIN=$(abspath $(KERNEL_BIN)) BIN_DIR=$(abspath $(BIN_DIR)/) IS_DEBUG="$(IS_DEBUG)"
 run_iso: 
 	qemu-system-i386 $(BOOT_FLAGS) -cdrom $(BIN_DIR)/silix.iso -boot d
 run_floppy:
@@ -59,7 +69,7 @@ test:
 publish_kernel:
 	cp $(KERNEL_BIN)/kernel $(KERNEL_BIN)/kernel-$(VERSION)
 run_kernel: publish_kernel
-	qemu-system-i386 -kernel $(KERNEL_BIN)/kernel-$(VERSION)
+	qemu-system-i386 $(BOOT_FLAGS) -kernel $(KERNEL_BIN)/kernel-$(VERSION)
 dump_kernel:
 	file $(KERNEL_BIN)/kernel.efi
 	hexdump -C $(KERNEL_BIN)/kernel.efi
