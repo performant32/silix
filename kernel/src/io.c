@@ -6,6 +6,7 @@
 
 #include "string.h"
 #include "panic.h"
+#include "tty.h"
 
 #define MIN(a,b) (a < b ? a : b)
 static bool is_digit(char c){
@@ -228,7 +229,8 @@ void kprintf(char* const fmt, ...){
     memcpy(buff + buffAt, fmt + lastIn, size);
     buffAt+=size;
 
-    //vga_write_characters(buff, buffAt);
+    tty_terminal_t* terminal = get_current_tty();
+    tty_write(terminal, buff, buffAt);
     va_end(args);
 }
 

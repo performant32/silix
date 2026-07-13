@@ -1,7 +1,6 @@
 #include "drivers/keyboard.h"
 #include "drivers/vga.h"
-#include "gdt.h"
-#include "multiboot.h"
+#include "gdt.h" #include "multiboot.h"
 #include "pci.h"
 #include "pit.h"
 #include "scheduler.h"
@@ -16,6 +15,7 @@
 #include "idt.h"
 #include "string.h"
 #include "usb.h"
+#include "tty.h"
 #include <stddef.h>
 
 void test_malloc(){
@@ -52,8 +52,10 @@ void test_malloc(){
 void kernel_thread_start1();
 void kernel_thread_start2();
 void kernel_main(multiboot1_header_t* multiboot_header){
-    //vga_clear_screen();
     vga_init(&multiboot_header->framebuffer);
+    const char* str = "hello world";
+    tty_init(get_current_tty());
+
     kprintf("Starting kernel\n");
     uint32_t flags = multiboot_header->flags;
     kprintf("Multiboot at %p with flags %b\n", (size_t)multiboot_header, flags);

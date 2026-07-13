@@ -31,7 +31,7 @@ STAGE2_OBJ:=$(OBJ_DIR)/$(BOOT_FS)/stage2
 KERNEL_BIN:=$(BIN_DIR)/kernel
 KERNEL_OBJ:=$(OBJ_DIR)/kernel
 
-.PHONY: default setup_flags build_floppy run_floppy help boot1 test run_nographic clean fat12 kernel run_kernel config
+.PHONY: default setup_flags build_floppy run_floppy help boot1 test run_nographic clean fat12 kernel config
 default: build_floppy run_floppy
 help:
 	@(echo build_floppy run_floppy run_nographic clean fat12)
@@ -55,7 +55,7 @@ stage1:
 stage2:
 	$(MAKE) -C $(BOOTLOADER_SRC)/stage2 stage2 OBJ_DIR=$(abspath $(STAGE2_OBJ)) BIN_DIR=$(abspath $(STAGE2_BIN))
 kernel:
-	$(MAKE) -C $(KERNEL_SRC) BIN_DIR=$(abspath $(KERNEL_BIN)) OBJ_DIR=$(abspath $(KERNEL_OBJ)) IS_DEBUG="$(IS_DEBUG)"
+	$(MAKE) -C $(KERNEL_SRC) BIN_DIR=$(abspath $(KERNEL_BIN)) OBJ_DIR=$(abspath $(KERNEL_OBJ)) BUILD_TYPE="$(BUILD_TYPE)"
 iso: kernel publish_kernel
 	$(MAKE) -C bl/grub STAGE1_BIN=$(abspath $(STAGE1_BIN)) VERSION=$(VERSION) KERNEL_BIN=$(abspath $(KERNEL_BIN)) BIN_DIR=$(abspath $(BIN_DIR)/) IS_DEBUG="$(IS_DEBUG)"
 run_iso: 
@@ -68,8 +68,6 @@ test:
 	$(ASM) $(ASM_FLAGS) $(BOOTLOADER_SRC)/test.asm -o $(BIN_DIR)/test.bin
 publish_kernel:
 	cp $(KERNEL_BIN)/kernel $(KERNEL_BIN)/kernel-$(VERSION)
-run_kernel: publish_kernel
-	qemu-system-i386 $(BOOT_FLAGS) -kernel $(KERNEL_BIN)/kernel-$(VERSION)
 dump_kernel:
 	file $(KERNEL_BIN)/kernel.efi
 	hexdump -C $(KERNEL_BIN)/kernel.efi

@@ -13,7 +13,7 @@ CFLAGS=-ffreestanding  -fno-builtin -m32 -Wall -fno-stack-protector -no-pie -DAR
 ASMFLAGS=-f elf32
 LDFLAGS=-nostdlib -m elf_i386 -T linker.ld
 
-ifdef IS_DEBUG
+ifeq ("$(BUILD_TYPE)", "debug")
 	CFLAGS += -g -O0
 endif
 
