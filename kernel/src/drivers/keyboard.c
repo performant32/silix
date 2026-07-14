@@ -11,7 +11,7 @@ const char* row1 =
     "qwertyuiop"
 ;
 const char* row2 =
-    "asdfghl"
+    "asdfghjkl"
 ;
 const char* row3 =
     "zxcvbnm"

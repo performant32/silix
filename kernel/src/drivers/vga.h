@@ -1,6 +1,8 @@
 #ifndef VGA_H
 #define VGA_H
 #include "multiboot.h"
+#include "color.h"
+#include <stdint.h>
 
 enum vga_framebuffer_type_e{
     VGA_FB_USE_INDEXED=0,
@@ -32,6 +34,7 @@ typedef struct vga_font_t{
 
 extern const vga_font_t vga_8x14_font;
 
+uint32_t vga_get_color(color_t color);
 uint8_t* vga_get_framebuffer_addr();
 vga_info_t* get_vga_info();
 

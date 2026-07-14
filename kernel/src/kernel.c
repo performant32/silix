@@ -20,7 +20,6 @@
 
 void test_malloc(){
     kprintf("Testing malloc\n");
-    kheap_init();
 
     int size = 100;
     char* data1 = (char*)kmalloc(size);
@@ -52,6 +51,7 @@ void test_malloc(){
 void kernel_thread_start1();
 void kernel_thread_start2();
 void kernel_main(multiboot1_header_t* multiboot_header){
+    kheap_init();
     vga_init(&multiboot_header->framebuffer);
     const char* str = "hello world";
     tty_init(get_current_tty());

@@ -29,6 +29,9 @@ vga_info_t* get_vga_info(){
 void draw_pixel(int x, int y, uint32_t pixel){
     framebuffer_addr[y + x] = pixel;
 }
+uint32_t vga_get_color(color_t color){
+    return (color.r << 16) | (color.g << 8) | (color.b);
+}
 void vga_init(framebuffer_info_t* info){
     vga_info.width = info->width;
     vga_info.height = info->height;
@@ -44,13 +47,6 @@ void vga_init(framebuffer_info_t* info){
         case VGA_FB_USE_EGA:
             break;
     }
-    vga_clear_screen(0x0000AA);
-    // uint32_t scale = 1;
-    // for(int i = 0; i < len; i++){
-    //     //vga_draw_glyph(x,0,0xFFFFFF, scale, string[i]);
-    //     x+=8*scale;
-    // }
-
 }
 
 void vga_draw_glyph(uint32_t x, uint32_t y, uint32_t color, uint32_t scale, char c){
