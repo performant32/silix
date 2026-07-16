@@ -2,9 +2,11 @@
 
 #include <stddef.h>
 
+#include "gdt.h"
 #include "io.h"
 #include "string.h"
 #include "panic.h"
+#include "mmap.h"
 
 const char rsdp_checksum[8] = "RSD PTR ";
 const char rsdt_signature[4] = "RSDT";
@@ -13,37 +15,37 @@ rsdt_t* rsdt = NULL;
 
 void locate_acpi_tables(){
     kprintf("Locating ACPI Tables\n");
-
-    char* firstSearch = (char*)(0x40E);
-    char* endSearch = (char*)(1024 * 1000);
-
-    //TODO: check other possible locations aswell
-    while(firstSearch < endSearch){
-        if(strncmp(firstSearch, rsdp_checksum, 8) == 0){
-            goto located;
-        }
-        firstSearch++;
+    memory_map_t** acpi_memory = get_acpi_memory_regions();
+    size_t acpi_region_count = get_acpi_memory_regions_count();
+    if(acpi_region_count == 0){
+        kprintf("Failed to find any acpi regions\n");
+        kpanic();
     }
-    firstSearch = (char*)0xE0000;
-    endSearch = (char*)0xFFFFF;
-    while(firstSearch < endSearch){
-        if(strncmp(firstSearch, rsdp_checksum, 8) == 0){
-            goto located;
+
+    char* first_search = NULL;
+    for(size_t i = 0; i < acpi_region_count; i++){
+        first_search = (char*)acpi_memory[i]->data;
+        char* end_search = first_search + acpi_memory[i]->size;
+
+        const unsigned acpi_byte_boundary = 16;
+        while(first_search < end_search){
+            if(strncmp(first_search, rsdp_checksum, 8) == 0 && (size_t)first_search % acpi_byte_boundary == 0){
+                goto located;
+            }
+            first_search++;
         }
-        firstSearch++;
     }
     kprintf("Failed to locate rsdp\n");
     kpanic();
 located:
-
-    rsdp = (struct rsdp_t*)firstSearch;
+    rsdp = (struct rsdp_t*)first_search;
 
     uint8_t checksum = 0;
     for(int i = 0; i < sizeof(struct rsdp_t); i++){
-        checksum+=((char*)(rsdp))[i];
+        checksum+=((char*)rsdp)[i];
     }
     if(checksum != 0){
-        kprintf("Failed to validate apci, got %u\n", checksum);
+        kprintf("Failed to validate apci, got %u, revision %u\n", checksum, rsdp->revision);
         kpanic();
     }
     kprintf("Located acpi tables at %p with revision %d\n", rsdp_checksum, rsdp->revision);

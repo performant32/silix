@@ -7,24 +7,24 @@
 static void(*irqs[16])(general_registers_t*)={0};
 
 void interrupt_handler(interrupt_registers_t* interrupt_registers){
-    uint8_t irq_line = interrupt_registers->interrupt_number;
-    if(irq_line == 255){
+    uint8_t irq = interrupt_registers->interrupt_number;
+    if(irq == 255){
         // Spurious/unsupported interrupt
         return;
     }
-    if(irq_line < 32){
-        kprintf("Unsupported cpu exception %d\n", irq_line);
+    if(irq < 32){
+        kprintf("Unsupported cpu exception %d\n", irq);
         return;
     }
-    if(irq_line < IRQ_BEGIN || irq_line >= IRQ_BEGIN + 16){
+    if(irq < IRQ_BEGIN || irq >= IRQ_BEGIN + 16){
         // Spurious interrupt
         return;
     }
     // TODO: handle spurious interrupts, NMI, and exceptions
-    void (*handler)(general_registers_t* registers) = irqs[irq_line - IRQ_BEGIN];
+    void (*handler)(general_registers_t* registers) = irqs[irq - IRQ_BEGIN];
     if(!handler){
-        kprintf("Warning. Unsupported interrupt %u\n", irq_line);
-        i8259_send_eoi(irq_line);
+        kprintf("Warning. Unsupported interrupt %u\n", irq);
+        i8259_send_eoi(irq);
         return;
     }
     handler(&interrupt_registers->cpu_registers);
@@ -35,6 +35,6 @@ void interrupt_exception_handler(general_registers_t registers){
     kprintf("exception caught\n");
 }
 
-void irq_install_handler(int irq_line, void (*handler)(general_registers_t*)){
-    irqs[irq_line] = handler;
+void irq_install_handler(int irq, void (*handler)(general_registers_t*)){
+    irqs[irq] = handler;
 }

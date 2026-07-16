@@ -7,7 +7,7 @@ Arch=IA
 VERSION=001
 
 # Qemu Boot flags
-BOOT_FLAGS:= 
+BOOT_FLAGS:= -vga virtio -display sdl
 
 OTHER_FILES := $(wildcard .*.smk)
 ifdef OTHER_FILES
@@ -32,7 +32,7 @@ KERNEL_BIN:=$(BIN_DIR)/kernel
 KERNEL_OBJ:=$(OBJ_DIR)/kernel
 
 .PHONY: default setup_flags build_floppy run_floppy help boot1 test run_nographic clean fat12 kernel config
-default: build_floppy run_floppy
+default: kernel
 help:
 	@(echo build_floppy run_floppy run_nographic clean fat12)
 clean:

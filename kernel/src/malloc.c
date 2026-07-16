@@ -1,6 +1,9 @@
 #include "malloc.h"
 #include <stdint.h>
 #include <string.h>
+#include "gdt.h"
+#include "math.h"
+#include "multiboot.h"
 #include "panic.h"
 
 // Yes very simple heap
@@ -54,6 +57,16 @@ void* kmalloc(size_t size){
         current_block = current_block->next;
     }
     return NULL;
+}
+void* krealloc(void* ptr, size_t size){
+    if(ptr == NULL)return kmalloc(size);
+    //For now just laziy copy instead of doing any actual meaningful performance boost
+    heap_block_t* heap_block = (heap_block_t*)((char*)ptr - sizeof(heap_block_t));
+    size_t block_size = (char*)heap_block->next - (char*)(heap_block + sizeof(heap_block_t));
+
+    char* new_data = (char*)kmalloc(size);
+    memcpy(new_data, (char*)(heap_block + sizeof(heap_block_t)), MIN(block_size, size));
+    return new_data;
 }
 void* kzmalloc(size_t size){
     void* data = kmalloc(size);

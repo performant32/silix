@@ -34,7 +34,7 @@ typedef struct sdt_header_t{
 
 typedef struct rsdt_t{
     sdt_header_t header;
-    uint32_t entries[];
+    size_t entries[];
 } rsdt_t;
 
 rsdp_t* get_rsdp();

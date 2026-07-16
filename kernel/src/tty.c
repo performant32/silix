@@ -14,7 +14,7 @@ void tty_init(tty_terminal_t* terminal){
     terminal->size.rows = info->height / vga_8x14_font.height;
     terminal->position = (typeof(terminal->position)){0};
     terminal->background_color = (color_t){0,0,255};
-    terminal->text_color = (color_t){255};
+    terminal->text_color = (color_t){255, 255, 255};
 
     terminal->lines = kmalloc(sizeof(char*) * terminal->size.rows);
     for(size_t j = 0; j < terminal->size.rows + 1; j++){

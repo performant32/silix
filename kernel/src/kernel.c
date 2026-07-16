@@ -1,7 +1,9 @@
 #include "drivers/keyboard.h"
 #include "drivers/vga.h"
-#include "gdt.h" #include "multiboot.h"
-#include "pci.h"
+#include "gdt.h"
+#include "mmap.h"
+#include "multiboot.h"
+#include "drivers/pci.h"
 #include "pit.h"
 #include "scheduler.h"
 #include "tcb.h"
@@ -50,7 +52,7 @@ void test_malloc(){
 }
 void kernel_thread_start1();
 void kernel_thread_start2();
-void kernel_main(multiboot1_header_t* multiboot_header){
+void kernel_main(multiboot1_header_t* multiboot_header, uint32_t magic){
     kheap_init();
     vga_init(&multiboot_header->framebuffer);
     const char* str = "hello world";
@@ -65,10 +67,12 @@ void kernel_main(multiboot1_header_t* multiboot_header){
         kprintf("Got bootloader name \"%s\" addr %p offset %d\n", name, name, offsetof(multiboot1_header_t, boot_loader_name));
     }
 
-    //locate_acpi_tables();
+    initialize_mmap(multiboot_header);
+    locate_acpi_tables();
     setup_gdt();
     setup_idt();
     apic_init();
+    pcie_init();
     pit_init();
     usb_init();
     ps2_init();

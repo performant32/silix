@@ -1,6 +1,7 @@
 #ifndef BIT_FIELDS_H
 #define BIT_FIELDS_H
 
+#define SBIT(b) (1UL << b)
 #define BIT(x, b) ((x << b) & (1 << b))
 
 //#define BITS(x, b, s) ((x << b) & ((1 << s << b) - 1))

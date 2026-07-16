@@ -5,6 +5,7 @@
 #include "drivers/vga.h"
 
 void pit_init(){
+    //TODO: Depricate with IOAPIC since dont work on real hardware
     uint16_t reload_value = 65535;
     uint8_t command = 0b00110110;
     out_port_byte(PIT_MODE_COMMAND_REGISTER, command);

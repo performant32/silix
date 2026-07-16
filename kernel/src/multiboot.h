@@ -2,10 +2,12 @@
 #define MULTIBOOT_H
 
 #include <stdint.h>
+#include "bit_fields.h"
 
 enum multiboot1_flags{
     MULTIBOOT_BOOT_DEVICE_FLAG_BIT=1,
-    MULTIBOOT_BOOT_LOADER_NAME_BIT=9
+    MULTIBOOT_BOOT_LOADER_NAME_BIT=9,
+    MULTIBOOT_MMAP_BIT=6
 };
 
 typedef struct vbe_info_t{
@@ -40,6 +42,28 @@ typedef struct framebuffer_info_t{
     };
 
 }__attribute__((packed)) framebuffer_info_t;
+
+typedef enum multiboot1_mmap_type_e: uint64_t{
+    // All other values not specified mean reserved
+    MULTIBOOT1_MMAP_TYPE_AVAILABLE_RAM=1,
+    MULTIBOOT1_MMAP_USABLE_ACPI=3,
+    MULTIBOOT1_MMAP_RESERVED_MEMORY=4,
+    MULTIBOOT1_MMAP_DEFECTIVE_RAM=5,
+}multiboot1_mmap_type_e;
+
+typedef struct multiboot1_mmap_t{
+    uint64_t base_addr;
+    multiboot1_mmap_type_e length;
+    uint64_t type;
+}__attribute__((packed)) multiboot1_mmap_t;
+
+//multiboot mmap points to a multiboot1_mmap_t and 4 bytes before it are the size, so multiboot1 mmap stores a pair of size, struct
+typedef struct multiboot1_mmap_full_t{
+    uint32_t size;
+    multiboot1_mmap_t mmap;
+}__attribute__((packed)) multiboot1_mmap_full_t;
+
+
 typedef struct multiboot1_header_t{
     uint32_t flags;
     uint32_t mem_lower;
@@ -59,5 +83,7 @@ typedef struct multiboot1_header_t{
     vbe_info_t vbe;
     framebuffer_info_t framebuffer;
 }__attribute__((packed)) multiboot1_header_t;
+
+bool multiboot1_has_mmap(multiboot1_header_t* multiboot);
 
 #endif
